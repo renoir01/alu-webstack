@@ -14,7 +14,6 @@ global
 
         # See: https://ssl-config.mozilla.org/#server=haproxy&server-version=2.0.3&config=intermediate
         ssl-default-bind-ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
-        ssl-dh-param-file /etc/haproxy/dhparams.pem
         ssl-default-bind-ciphersuites TLS_AES_128_GCM_SHA256:TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256
         ssl-default-bind-options ssl-min-ver TLSv1.2 no-tls-tickets
 
@@ -34,15 +33,21 @@ defaults
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
 
-frontend www.cprogramming.tech
+frontend www-http
         mode http
-        bind :80
-        bind :443 ssl crt /etc/letsencrypt/live/www.cprogramming.tech/combined.pem
-        http-request redirect scheme https code 301 unless { ssl_fc }
-        default_backend cprogram_servers
+        timeout client 10s
+        bind *:80
+        default_backend allServers
 
-backend cprogram_servers
-        mode http
+frontend www-https
+        bind *:443 ssl crt /etc/haproxy/certs/www.renoir01.tech.pem
+        reqadd  X-Forwarded-Proto:\ https
+        default_backend allServers
+
+backend allServers
+        timeout connect 10s
+        timeout server  10s
         balance roundrobin
-        server 5824-web-01 3.92.51.14:80 check
-        server 5824-web-02 52.90.147.148:80 check
+        mode http
+        server 5824-web-01 3.88.103.191:80 check
+        server 5824-web-02 52.91.58.107:80 check
