@@ -34,15 +34,15 @@ defaults
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
 
-frontend www.cprogramming.tech
+frontend www.renoir01.tech
         mode http
         bind :80
-        bind :443 ssl crt /etc/letsencrypt/live/www.cprogramming.tech/combined.pem
+        bind :443 ssl crt /etc/letsencrypt/live/www.renoir01.tech/combined.pem
         http-request redirect scheme https code 301 unless { ssl_fc }
         default_backend cprogram_servers
 
 backend cprogram_servers
         mode http
         balance roundrobin
-        server 5824-web-01 3.92.51.14:80 check
-        server 5824-web-02 52.90.147.148:80 check
+        server 5824-web-01 34.228.155.153:80 check
+        server 5824-web-02 34.230.18.90:80 check
